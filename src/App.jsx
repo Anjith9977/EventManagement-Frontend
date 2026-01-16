@@ -1,7 +1,6 @@
 import { Route, Routes } from 'react-router'
 import './App.css'
 import Home from './user/pages/Home'
-import Pnf from './pages/pnf'
 import Auth from './pages/Auth'
 import Profile from './user/pages/Profile'
 import View from './user/pages/View'
@@ -43,7 +42,6 @@ function App() {
       />
       <Routes>
         <Route path='/' element={<Home />} />
-        <Route path='/*' element={<Pnf />} />
         <Route path='/login' element={<Auth />} />
         <Route path='/register' element={<Auth register />} />
         <Route path='/profile' element={<Profile />} />
