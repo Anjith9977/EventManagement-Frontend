@@ -1,3 +1,4 @@
-const SERVER_URL="http://localhost:3000"
+const SERVER_URL = "https://eventmanagement-backend-2-1gbd.onrender.com";
 
-export default SERVER_URL
+
+export default SERVER_URL;

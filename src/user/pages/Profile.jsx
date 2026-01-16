@@ -48,8 +48,6 @@ function Profile() {
 
     const { username, Phone, password } = userDetails;
 
-    if (username && Phone && password) {
-
       const token = sessionStorage.getItem('token')
 
       const reqHeader = {
@@ -87,7 +85,7 @@ function Profile() {
         }
       }
 
-    }
+    
 
   }
   return (

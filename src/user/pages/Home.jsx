@@ -1,55 +1,39 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import Footer from "../../components/Footer";
 import Header from "../components/Header";
 import { Link } from "react-router";
 import { getUserEventApi } from "../../services/AllApi";
-import { useState } from "react";
 import { searchkeycontext } from "../../context/Context";
-import { useContext } from "react";
-
 
 function Home() {
+  const [displayData, setDisplayData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const [displayData, setDisplayData] = useState([])
-  const [location, setLocation] = useState("San Francisco")
-  const [showLocationInput, setShowLocationInput] = useState(false)
-  const { SetSearchkey } = useContext(searchkeycontext)
-
-
-
-  console.log(displayData);
-
+  const { SetSearchkey } = useContext(searchkeycontext);
 
   useEffect(() => {
-
-    getEvent()
-
-  }, [])
-
+    getEvent();
+  }, []);
 
   const getEvent = async () => {
-
-    const token = sessionStorage.getItem('token')
+    const token = sessionStorage.getItem("token");
 
     const reqHeader = {
-      authorization: `bearer ${token}`
-    }
+      authorization: `Bearer ${token}`, // ✅ FIXED
+    };
 
     try {
-
-      const res = await getUserEventApi(reqHeader)
-      // console.log(res)
-      setDisplayData(res.data)
-
+      const res = await getUserEventApi(reqHeader);
+      setDisplayData(res.data);
     } catch (error) {
-
-      conssole.log(error)
-
+      console.log(error); // ✅ FIXED
+    } finally {
+      setLoading(false);
     }
-  }
+  };
+
   return (
     <div className="bg-[#FFF5FA] text-gray-900">
-
       {/* HEADER */}
       <Header />
 
@@ -66,9 +50,7 @@ function Home() {
             Meet your favorite artists, sports teams & unforgettable experiences
           </p>
 
-          {/* Static Hero Highlight */}
           <div className="mt-6 flex flex-col items-center gap-6">
-
             <p className="text-white/90 text-lg max-w-xl">
               Concerts • Sports • Festivals • Workshops
             </p>
@@ -79,10 +61,7 @@ function Home() {
             >
               Explore Events
             </Link>
-
           </div>
-
-
         </div>
       </section>
 
@@ -98,47 +77,51 @@ function Home() {
             </p>
           </div>
 
-          <Link to={'/all-events'}><button className="border border-pink-500 text-pink-600 px-6 py-2 rounded-full hover:bg-pink-600 hover:text-white transition-all shadow-sm">
-            SEE ALL EVENTS
-          </button></Link>
-
-
+          <Link to="/all-events">
+            <button className="border border-pink-500 text-pink-600 px-6 py-2 rounded-full hover:bg-pink-600 hover:text-white transition-all shadow-sm">
+              SEE ALL EVENTS
+            </button>
+          </Link>
         </div>
 
         <div className="grid md:grid-cols-3 gap-8">
+          {loading ? (
+            <h1 className="text-center col-span-3 text-lg text-gray-500">
+              Loading events...
+            </h1>
+          ) : displayData.length > 0 ? (
+            displayData.map((event) => (
+              <div
+                key={event._id}
+                className="group relative overflow-hidden rounded-2xl shadow-xl bg-white hover:-translate-y-2 transition-all"
+              >
+                <img
+                  src={`http://localhost:3000/uploads/${event.image}`}
+                  className="h-72 w-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  alt={event.eventName}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
 
-          {
-            displayData?.length > 0 ?
-              displayData?.map(event => (
+                <div className="absolute bottom-0 p-5 text-white">
+                  <h3 className="font-bold text-lg">{event.eventName}</h3>
+                  <p className="text-sm text-white/80">{event.location}</p>
 
-                <div className="group relative overflow-hidden rounded-2xl shadow-xl bg-white hover:-translate-y-2 transition-all">
-                  <img
-                    src={`http://localhost:3000/uploads/${event.image}`}
-                    className="h-72 w-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    alt=""
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-
-                  <div className="absolute bottom-0 p-5 text-white">
-                    <h3 className="font-bold text-lg">{event.eventName}</h3>
-                    <p className="text-sm text-white/80">{event.location}</p>
-
-                    <div className="flex gap-3 mt-4">
-                      <Link
-                        to={`/view/${event._id}`}
-                        className="bg-white text-pink-600 px-4 py-1 rounded-full text-sm font-semibold hover:bg-pink-100 transition"
-                      >
-                        View
-                      </Link>
-                    </div>
+                  <div className="flex gap-3 mt-4">
+                    <Link
+                      to={`/view/${event._id}`}
+                      className="bg-white text-pink-600 px-4 py-1 rounded-full text-sm font-semibold hover:bg-pink-100 transition"
+                    >
+                      View
+                    </Link>
                   </div>
                 </div>
-
-              ))
-              :
-              <h1>No Event</h1>
-          }
-
+              </div>
+            ))
+          ) : (
+            <h1 className="text-center col-span-3 text-lg text-gray-500">
+              No Events Found
+            </h1>
+          )}
         </div>
       </section>
 
@@ -152,7 +135,7 @@ function Home() {
         </p>
 
         <Link
-          to="/orgLog"
+          to="/register"
           className="inline-block bg-white text-pink-600 px-8 py-3 rounded-full font-bold hover:bg-pink-100 transition"
         >
           Become an Organizer
@@ -161,7 +144,6 @@ function Home() {
 
       {/* FOOTER */}
       <Footer />
-
     </div>
   );
 }

@@ -3,7 +3,8 @@ import Header from "../components/Header";
 import Footer from "../../components/Footer";
 import { Link } from "react-router-dom";
 import { MapPin, Calendar, Clock, CreditCard, Eye, X } from "lucide-react";
-import { myBookingApi } from "../../services/AllApi";
+import { deleteMyBookingApi, myBookingApi } from "../../services/AllApi";
+import { toast } from "react-toastify";
 
 function MyBooking() {
   const [display, setDisplay] = useState([]);
@@ -27,6 +28,34 @@ function MyBooking() {
     }
   };
 
+
+  const deleteMyBooking = async (id) => {
+
+    const token = sessionStorage.getItem("token");
+
+    const reqHeader = {
+      authorization: `Bearer ${token}`,
+    };
+
+    try {
+
+      const res = await deleteMyBookingApi(id, reqHeader)
+
+      getMyBooking();
+
+      if (res.status === 200) {
+        toast.success("Refund will be processed within 7 days");
+        getMyBooking(); 
+      }
+
+    } catch (error) {
+      console.log(error);
+
+    }
+  }
+
+
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-rose-50">
       <Header />
@@ -45,68 +74,64 @@ function MyBooking() {
       <div className="mt-12 px-5 lg:px-20 flex flex-col gap-6">
         {/* EMPTY STATE */}
         {display.length === 0 && (
-          <p className="text-center text-gray-500 text-lg">
-            You have not booked any events yet.
-          </p>
+          <p>You have not booked any events yet.</p>
         )}
 
+
         {/* Booking Cards */}
-        {display.map((event) => (
+        {display.map((booking) => (
           <div
-            key={event._id}
-            className="bg-white border border-pink-100 rounded-2xl p-4 flex flex-col md:flex-row items-center gap-5 shadow-xl hover:shadow-2xl transition-all"
+            key={booking._id}
+            className="bg-white border border-pink-100 rounded-2xl p-4 flex flex-col md:flex-row items-center gap-5 shadow-xl"
           >
             {/* Image */}
-            <div className="w-full md:w-1/4 h-48 md:h-32 flex-shrink-0">
+            <div className="w-full md:w-1/4 h-48 md:h-32">
               <img
-                src={`http://localhost:3000/uploads/${event.image}`}
-                alt={event.eventName}
+                src={`http://localhost:3000/uploads/${booking.eventId?.image}`}
+                alt={booking.eventId?.eventName}
                 className="w-full h-full object-cover rounded-xl"
               />
             </div>
 
             {/* Details */}
             <div className="flex-1 flex flex-col gap-2">
-              <h3 className="font-bold text-lg text-gray-900">
-                {event.eventName}
+              <h3 className="font-bold text-lg">
+                {booking.eventId?.eventName}
               </h3>
 
-              <div className="flex flex-wrap items-center text-gray-500 text-sm gap-4">
-                <span className="flex items-center gap-1">
-                  <MapPin size={16} /> {event.location}
-                </span>
-                <span className="flex items-center gap-1">
-                  <Calendar size={16} /> {event.startDate}
-                </span>
-                <span className="flex items-center gap-1">
-                  <Clock size={16} /> {event.endDate}
-                </span>
+              <div className="flex flex-wrap text-gray-500 text-sm gap-4">
+                <span>{booking.eventId?.location}</span>
+                <span>{booking.eventId?.startDate}</span>
+                <span>{booking.eventId?.endDate}</span>
               </div>
 
-              <div className="text-pink-600 font-semibold flex items-center gap-1 text-sm">
-                <CreditCard size={16} /> ₹{event.ticketPrice}
+              <div className="text-pink-600 font-semibold text-sm">
+                ₹{booking.eventId?.ticketPrice}
               </div>
+
+              <p className="text-sm text-gray-600">
+                Tickets: {booking.ticketsCount}
+              </p>
             </div>
 
             {/* Actions */}
             <div className="flex md:flex-col gap-3">
-              {/* ✅ PASS EVENT ID */}
-              <Link to={`/view/${event._id}`}>
-                <button className="flex items-center justify-center gap-2 bg-gradient-to-r from-pink-500 to-rose-500 text-white py-2 px-5 rounded-xl font-semibold shadow-lg hover:scale-105 transition-all">
-                  <Eye size={16} /> View
+              <Link to={`/view/${booking.eventId?._id}`}>
+                <button className="bg-pink-500 text-white py-2 px-5 rounded-xl">
+                  View
                 </button>
               </Link>
 
-              {/* Cancel (UI only for now) */}
               <button
-                disabled
-                className="flex items-center justify-center gap-2 bg-white border border-red-300 text-red-400 py-2 px-5 rounded-xl font-semibold cursor-not-allowed"
+                onClick={() => deleteMyBooking(booking._id)}
+                className="border border-red-300 text-red-400 py-2 px-5 rounded-xl"
               >
-                <X size={16} /> Cancel
+                Cancel
               </button>
             </div>
           </div>
         ))}
+
       </div>
 
       <div className="h-20"></div>

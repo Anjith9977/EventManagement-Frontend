@@ -17,7 +17,7 @@ function Auth({ register }) {
   });
 
   const navigate = useNavigate();
- 
+
   const handleRegister = async (e) => {
     e.preventDefault();
     const { username, email, password } = userInput;
@@ -61,7 +61,7 @@ function Auth({ register }) {
         toast.success("Logged in successfully");
 
         sessionStorage.setItem("users", JSON.stringify(res.data.users));
-       sessionStorage.setItem("token", res.data.token)
+        sessionStorage.setItem("token", res.data.token);
 
         setTimeout(() => {
           if (res.data.users.role === "Admin") {
@@ -73,15 +73,17 @@ function Auth({ register }) {
           }
         }, 1000);
       }
-        else if (res.status === 401) {
-          toast.warning(res.response.data);
-          setUserInput({ username: "", email: "", password: "",role: "user" });
-        }
 
-        else if (result.status = 404) {
-          toast.error(result.response.data);
-          setUserInput({ name: "", email: "", password: "",role: "user" });
-        }
+      else if (res.status === 401) {
+        toast.warning(res.response.data);
+        setUserInput({ username: "", email: "", password: "", role: "user" });
+      }
+
+      else if (res.status === 404) {
+        toast.error(res.response.data);
+        setUserInput({ username: "", email: "", password: "", role: "user" });
+      }
+
     } catch (err) {
       console.log(err);
       toast.error("Invalid email or password");
@@ -89,20 +91,17 @@ function Auth({ register }) {
   };
 
 
+
   const handleGoogleLogin = async (credentialResponse) => {
     try {
       const details = jwtDecode(credentialResponse.credential);
 
-      const res = await googleloginApi({
-        username: details.name,
-        email: details.email,
-        profile: details.picture
-      });
+      const res = await googleloginApi({ username: details.name, email: details.email, profile: details.picture, password: "googlepwd" });
 
       if (res.status === 200) {
         toast.success("Logged in successfully");
 
-        sessionStorage.setItem("users", JSON.stringify(res.data.user));
+        sessionStorage.setItem("users", JSON.stringify(res.data.users));
         sessionStorage.setItem("token", res.data.token);
 
         setTimeout(() => {
@@ -113,7 +112,7 @@ function Auth({ register }) {
           }
         }, 1000);
       }
-      
+
     } catch (err) {
       console.log(err);
       toast.error("Google login failed");
@@ -133,7 +132,7 @@ function Auth({ register }) {
       <div className="relative z-10 w-[90%] max-w-md p-10 rounded-3xl bg-white/90 backdrop-blur-md border border-pink-300 shadow-2xl">
 
         <h1 className="text-center font-extrabold text-4xl text-pink-500 mb-1">
-          Eventify
+          Eventra
         </h1>
         <p className="text-center text-sm text-pink-400 mb-6">
           Experience Events Like Never Before
@@ -170,6 +169,7 @@ function Auth({ register }) {
           {/* Username */}
           {register && (
             <input
+              value={userInput.username}
               type="text"
               placeholder="Full Name"
               className="bg-pink-50 border border-pink-300 rounded-xl p-3 my-2"
@@ -181,6 +181,7 @@ function Auth({ register }) {
 
           {/* Email */}
           <input
+            value={userInput.email}
             type="email"
             placeholder="Email Address"
             className="bg-pink-50 border border-pink-300 rounded-xl p-3 my-2"
@@ -192,6 +193,7 @@ function Auth({ register }) {
           {/* Password */}
           <div className="relative my-2">
             <input
+              value={userInput.password}
               type={viewPasswordStatus ? "text" : "password"}
               placeholder="Password"
               className="w-full bg-pink-50 border border-pink-300 rounded-xl px-4 py-3 pr-12"

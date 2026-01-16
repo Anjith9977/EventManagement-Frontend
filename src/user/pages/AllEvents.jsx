@@ -69,7 +69,7 @@ function AllEvents() {
             <input
               onChange={(e) => SetSearchkey(e.target.value)}
               type="text"
-              placeholder="Search events..."
+              placeholder="Search by location..."
               className="w-full py-3 px-5 pr-12 rounded-full bg-white border border-pink-200 focus:ring-2 focus:ring-pink-400 outline-none shadow-lg"
             />
           </div>

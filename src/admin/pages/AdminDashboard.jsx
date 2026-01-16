@@ -158,35 +158,6 @@ function AdminDashboard() {
             </ResponsiveContainer>
           </div>
 
-          {/* PIE CHART */}
-          <div className="bg-white rounded-2xl p-5 shadow h-96">
-            <h3 className="text-lg font-semibold mb-4 text-[#831843]">
-              Event Status Distribution
-            </h3>
-
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={pieData}
-                  dataKey="value"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={110}
-                  label
-                >
-                  {pieData.map((_, index) => (
-                    <Cell
-                      key={index}
-                      fill={COLORS[index % COLORS.length]}
-                    />
-                  ))}
-                </Pie>
-                <Legend verticalAlign="bottom" />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-
         </div>
       </div>
     </div>

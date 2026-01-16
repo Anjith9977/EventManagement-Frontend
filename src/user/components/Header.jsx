@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { Menu, X } from "lucide-react";
 import { userProfileUpdateContext } from "../../context/Context";
 import SERVER_URL from "../../services/server_url";
@@ -8,28 +8,32 @@ function Header() {
   const [user, setUser] = useState(null);
   const [showMenu, setShowMenu] = useState(false);
   const [mobileMenu, setMobileMenu] = useState(false);
+  const navigate = useNavigate()
 
   const { userprofileUpdated } = useContext(userProfileUpdateContext);
 
-  useEffect(() => {
-    const storedUser = sessionStorage.getItem("users");
+useEffect(() => {
+  const storedUser = sessionStorage.getItem("users");
 
-    if (storedUser) {
-      const parsedUser = JSON.parse(storedUser);
-      setUser({
-        username: parsedUser.username,
-        profile: parsedUser.profile,
-      });
-    } else {
-      setUser(null);
-    }
-  }, [userprofileUpdated]);
+  if (storedUser && storedUser !== "undefined") {
+    const parsedUser = JSON.parse(storedUser);
+    setUser({
+      username: parsedUser.username,
+      profile: parsedUser.profile,
+    });
+  } else {
+    setUser(null);
+  }
+}, [userprofileUpdated]);
+
+
 
   const logout = () => {
     sessionStorage.clear();
     setUser(null);
     setShowMenu(false);
     setMobileMenu(false);
+    navigate('/')
   };
 
   return (

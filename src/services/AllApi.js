@@ -112,5 +112,9 @@ export const confirmEventPurchaseAPI = async (body, reqHeader) => {
    return await commonAPI("POST",`${SERVER_URL}/event-confirm-purchase`,body,reqHeader)
 };
 
+export const deleteMyBookingApi = async (id, reqHeader) => {
+   return await commonAPI("DELETE",`${SERVER_URL}/deleteMyBooking/${id}`,{},reqHeader)
+};
+
 
 
