@@ -96,7 +96,7 @@ function Home() {
                 className="group relative overflow-hidden rounded-2xl shadow-xl bg-white hover:-translate-y-2 transition-all"
               >
                 <img
-                  src={`https://eventmanagement-backend.onrender.com/uploads/${event.image}`}
+                  src={`http://localhost:3000/uploads/${event.image}`}
                   className="h-72 w-full object-cover group-hover:scale-105 transition-transform duration-500"
                   alt={event.eventName}
                 />

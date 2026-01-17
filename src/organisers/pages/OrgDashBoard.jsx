@@ -144,7 +144,7 @@ function OrgDashBoard() {
 
                   <div className="h-36 w-full overflow-hidden">
                     <img
-                      src={`https://eventmanagement-backend.onrender.com/uploads/${event.image}`}
+                      src={`http://localhost:3000/uploads/${event.image}`}
                       alt={event.eventName}
                       className="w-full h-full object-cover"
                     />

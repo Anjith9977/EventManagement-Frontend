@@ -70,7 +70,7 @@ function View() {
         {/* Event Image */}
         <div className="w-full h-72 rounded-xl overflow-hidden mb-8 shadow-[0_5px_15px_rgba(0,0,0,0.2)]">
           <img
-            src={`https://eventmanagement-backend.onrender.com/uploads/${event.image}`}
+            src={`http://localhost:3000/uploads/${display.image}`}
             className="w-full h-full object-cover"
             alt="Event"
           />

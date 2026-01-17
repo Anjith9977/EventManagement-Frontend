@@ -108,7 +108,7 @@ function AllEvents() {
             >
               <div className="relative w-full h-48">
                 <img
-                 src={`https://eventmanagement-backend.onrender.com/uploads/${event.image}`}
+                  src={`http://localhost:3000/uploads/${event.image}`}
                   alt="event"
                   className="w-full h-full object-cover"
                 />

@@ -103,8 +103,7 @@ function Orgview() {
             {displayEvent?.image && (
               <div className="w-full max-h-[400px] overflow-hidden rounded-2xl mb-5">
                 <img
-                  src={`https://eventmanagement-backend.onrender.com/uploads/${displayEvent.image}`}
-                  
+                  src={`http://localhost:3000/uploads/${displayEvent.image}`}
                   alt={displayEvent.eventName}
                   className="w-full h-full object-contain"
                 />
