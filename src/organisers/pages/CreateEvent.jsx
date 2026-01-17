@@ -19,8 +19,9 @@ function CreateEvent() {
     image: ""
   });
 
+
   const [orgStatus, setOrgStatus] = useState(null);
-  const [open, setOpen] = useState(false); // ✅ ONLY ADDITION
+  const [open, setOpen] = useState(false); 
 
   useEffect(() => {
     getOrganizerStatus();
@@ -196,7 +197,10 @@ function CreateEvent() {
                     </label>
                     <input
                       value={eventDetails.totalTicket}
-                      onChange={(e) => setEventDetails({ ...eventDetails, totalTicket: e.target.value })}
+                      onChange={(e) =>
+                        setEventDetails({ ...eventDetails, totalTicket: e.target.value })
+                      }
+
                       type="number"
                       className="w-full px-4 py-2 border border-pink-200 rounded-lg focus:ring-2 focus:ring-pink-300 outline-none transition"
                     />

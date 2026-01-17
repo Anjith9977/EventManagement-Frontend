@@ -87,7 +87,7 @@ function MyBooking() {
             {/* Image */}
             <div className="w-full md:w-1/4 h-48 md:h-32">
               <img
-                src={`http://localhost:3000/uploads/${booking.eventId?.image}`}
+                src={`https://eventmanagement-backend.onrender.com/uploads/${booking.eventId?.image}`}
                 alt={booking.eventId?.eventName}
                 className="w-full h-full object-cover rounded-xl"
               />
