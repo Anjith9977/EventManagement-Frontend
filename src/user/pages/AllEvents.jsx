@@ -108,10 +108,12 @@ function AllEvents() {
             >
               <div className="relative w-full h-48">
                 <img
-                  src={`http://localhost:3000/uploads/${event.image}`}
-                  alt="event"
+                  src={`https://eventmanagement-backend-2-1gbd.onrender.com/uploads/${event.image}`}
+                  alt={event.eventName}
                   className="w-full h-full object-cover"
                 />
+
+
                 <div className="absolute top-3 left-3 bg-pink-600 text-white text-xs px-3 py-1 rounded-full font-semibold">
                   {event.category}
                 </div>
