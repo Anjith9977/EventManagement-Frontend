@@ -1,135 +1,228 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Header from '../components/Header';
 import Footer from '../../components/Footer';
-import { Link, useParams } from 'react-router';
+import { Link, useParams } from 'react-router-dom';
 import { getAuserEventApi, paymentApi } from '../../services/AllApi';
-import { useEffect } from 'react';
-import { useState } from 'react';
-import {loadStripe} from '@stripe/stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
+import SERVER_URL from "../../services/server_url";
+import { Calendar, MapPin, Tag, Users, ShieldAlert, CreditCard } from "lucide-react";
 
 function View() {
-
-  const [display,setDisplay]=useState({})
-  const {id} = useParams()
+  const [display, setDisplay] = useState({});
+  const [loading, setLoading] = useState(true);
+  const { id } = useParams();
 
   useEffect(() => {
-     getAuserEvent()
-  }, [])
-  
+    getAuserEvent();
+  }, []);
 
-  const getAuserEvent=async()=>{
-
-    const token = sessionStorage.getItem('token')
-
+  const getAuserEvent = async () => {
+    const token = sessionStorage.getItem('token');
     const reqHeader = {
-      authorization:`bearer ${token}`
+      authorization: `bearer ${token}`
+    };
+    try {
+      const result = await getAuserEventApi(id, reqHeader);
+      setDisplay(result.data);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
     }
-      try {
+  };
 
-        const result = await getAuserEventApi(id,reqHeader)
-        console.log(result);
-        setDisplay(result.data)
-        
-        
-      } catch (error) {
-        console.log(error)
-      }
-  }
-
-   const makePayment=async()=>{
-
+  const makePayment = async () => {
+    // Stripe public key from code
     const stripe = await loadStripe('pk_test_51SfBlzKjIs046TNDi8GyN5tJDSLsZDmQWLzoNCDySSSNjVQmcVLBgqmFA0u6dzUN5LADr4u6riT96UA9k8w66msI00ahOzCSNr');
-
-    const token = sessionStorage.getItem('token')
-
-    const reqHeader={
-      authorization:`bearer ${token}`
-    }
+    const token = sessionStorage.getItem('token');
+    const reqHeader = {
+      authorization: `bearer ${token}`
+    };
 
     try {
-
-      const result = await paymentApi(display,reqHeader)
-      console.log(result);
-      window.location.href = result.data.url
-      
+      const result = await paymentApi(display, reqHeader);
+      window.location.href = result.data.url;
     } catch (error) {
-       console.log(error)
+      console.log(error);
     }
-  }
+  };
 
+  const availableSeats = display.totalTicket - (display.ticketsSold || 0);
+  const formattedStartDate = display.startDate
+    ? new Date(display.startDate).toLocaleDateString('en-IN', {
+        weekday: 'short',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      })
+    : '';
 
-  
   return (
-    <div className="w-full bg-gray-50">
-
+    <div className="w-full min-h-screen bg-gradient-to-br from-pink-50/20 via-white to-rose-50/20">
       <Header />
 
       {/* Main container */}
-      <div className="max-w-5xl mx-auto p-6 mt-28">
-
-        {/* Event Image */}
-        <div className="w-full h-72 rounded-xl overflow-hidden mb-8 shadow-[0_5px_15px_rgba(0,0,0,0.2)]">
-          <img
-            src={`http://localhost:3000/uploads/${display.image}`}
-            className="w-full h-full object-cover"
-            alt="Event"
-          />
-        </div>
-
-        {/* MAIN SECTION */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-
-          {/* LEFT SIDE */}
-          <div className="md:col-span-2">
-
-            <h1 className="text-3xl font-extrabold bg-gradient-to-r from-pink-500 to-rose-500 bg-clip-text text-transparent">
-              {display.eventName}
-            </h1>
-
-            {/* Location */}
-            <p className="mt-6 text-gray-600">
-             {display.location}
-            </p>
-
-            {/* Date */}
-            <p className="mt-2 text-gray-600">
-              {display.startDate}
-            </p>
-
-            <hr className="my-8 border-gray-300" />
-
-            {/* Overview */}
-            <h2 className="text-xl font-semibold mb-3 text-pink-500">Overview</h2>
-
-            <p className="text-gray-700 leading-relaxed">
-            {display.description}
-            </p>
-
-            <p className="mt-6 text-gray-700">
-              <strong>Category:</strong> {display.category}
-            </p>
+      <div className="max-w-6xl mx-auto p-4 md:p-8 pt-32 pb-20">
+        {loading ? (
+          <div className="flex flex-col items-center justify-center min-h-[50vh]">
+            <div className="w-12 h-12 border-4 border-pink-500 border-t-transparent rounded-full animate-spin"></div>
+            <p className="mt-4 text-gray-500 font-semibold">Loading event details...</p>
           </div>
+        ) : (
+          <>
+            {/* Event Image */}
+            <div className="w-full h-80 md:h-[450px] rounded-3xl overflow-hidden mb-8 shadow-2xl relative">
+              <img
+                src={`${SERVER_URL}/uploads/${display.image}`}
+                className="w-full h-full object-cover"
+                alt="Event Banner"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20"></div>
+              <div className="absolute bottom-6 left-6 md:left-10 text-white">
+                <span className="bg-pink-600/90 backdrop-blur-sm text-white text-xs px-4 py-1.5 rounded-full font-bold uppercase tracking-wider shadow-md">
+                  {display.category}
+                </span>
+                <h1 className="text-3xl md:text-5xl font-black mt-3 drop-shadow-md tracking-tight">
+                  {display.eventName}
+                </h1>
+              </div>
+            </div>
 
-          {/* RIGHT SIDE */}
-          <div className="border rounded-xl p-6 shadow-lg bg-white h-fit">
-            <p className="text-lg font-bold text-pink-500">Free</p>
-            <p className="text-gray-600 text-sm mt-1">
-              Jan 16 • 10:00 AM PST
-            </p>
+            {/* MAIN SECTION */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+              
+              {/* LEFT SIDE */}
+              <div className="lg:col-span-2 space-y-6">
+                
+                {/* Highlights bar */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-white border border-pink-100/50 p-6 rounded-2xl shadow-lg">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-pink-50 flex items-center justify-center text-pink-500">
+                      <MapPin size={20} />
+                    </div>
+                    <div>
+                      <span className="text-[10px] text-gray-400 uppercase font-bold block">Venue Location</span>
+                      <span className="text-sm font-semibold text-gray-700">{display.location}</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-pink-50 flex items-center justify-center text-pink-500">
+                      <Calendar size={20} />
+                    </div>
+                    <div>
+                      <span className="text-[10px] text-gray-400 uppercase font-bold block">Date & Time</span>
+                      <span className="text-sm font-semibold text-gray-700">{formattedStartDate}</span>
+                    </div>
+                  </div>
+                </div>
 
-            
-              <button onClick={makePayment} className="w-full bg-pink-500 hover:bg-pink-600 text-white py-2 rounded-lg mt-6 font-semibold transition">
-                Reserve a Spot
-              </button>
+                {/* Overview */}
+                <div className="bg-white border border-pink-100/50 p-8 rounded-3xl shadow-lg">
+                  <h2 className="text-2xl font-black mb-4 text-gray-900 border-b border-pink-100 pb-3 flex items-center gap-2">
+                    <Tag size={20} className="text-pink-500" /> Event Overview
+                  </h2>
 
-          </div>
+                  <p className="text-gray-600 leading-relaxed whitespace-pre-line text-base font-medium">
+                    {display.description}
+                  </p>
 
-        </div>
+                  <div className="mt-8 pt-6 border-t border-pink-100/50 flex flex-wrap gap-4 items-center">
+                    <span className="text-sm font-bold text-gray-400">Category:</span>
+                    <span className="bg-pink-50 text-pink-700 text-xs px-3 py-1.5 rounded-full font-bold uppercase tracking-wider border border-pink-100/50">
+                      {display.category}
+                    </span>
+                    <span className="bg-gray-50 text-gray-700 text-xs px-3 py-1.5 rounded-full font-bold uppercase tracking-wider border border-gray-200/50 flex items-center gap-1.5">
+                      <Users size={14} className="text-gray-500" /> Organizer: {display.email}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* RIGHT SIDE */}
+              <div className="bg-white border border-pink-100/50 rounded-3xl p-6 shadow-xl space-y-6">
+                
+                {/* Price Display */}
+                <div>
+                  <span className="text-xs text-gray-400 font-bold uppercase block tracking-wider">Ticket Price</span>
+                  <div className="flex items-baseline gap-1 mt-1">
+                    <span className="text-3xl font-black text-gray-900">₹{display.ticketPrice}</span>
+                    <span className="text-sm font-bold text-gray-400">/ attendee</span>
+                  </div>
+                </div>
+
+                <hr className="border-pink-100" />
+
+                {/* Seats Stats */}
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center text-sm font-semibold">
+                    <span className="text-gray-500 flex items-center gap-1.5">
+                      <Users size={16} className="text-pink-500" /> Total Capacity:
+                    </span>
+                    <span className="text-gray-800">{display.totalTicket} Seats</span>
+                  </div>
+                  
+                  <div className="flex justify-between items-center text-sm font-semibold">
+                    <span className="text-gray-500 flex items-center gap-1.5">
+                      <CreditCard size={16} className="text-pink-500" /> Booked Seats:
+                    </span>
+                    <span className="text-gray-800">{display.ticketsSold || 0} Seats</span>
+                  </div>
+
+                  <div className="flex justify-between items-center text-sm font-bold pt-1">
+                    <span className="text-gray-500">Available:</span>
+                    {availableSeats > 0 ? (
+                      <span className="text-green-600 bg-green-50 border border-green-100 px-3 py-1 rounded-full text-xs font-black">
+                        {availableSeats} Remaining
+                      </span>
+                    ) : (
+                      <span className="text-red-600 bg-red-50 border border-red-100 px-3 py-1 rounded-full text-xs font-black">
+                        Sold Out
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Visual Seat Progress Bar */}
+                  <div className="w-full bg-gray-100 h-2.5 rounded-full overflow-hidden mt-2">
+                    <div 
+                      className={`h-full transition-all duration-500 ${
+                        availableSeats <= 0 ? 'bg-red-500' : 'bg-gradient-to-r from-pink-500 to-rose-500'
+                      }`}
+                      style={{ width: `${Math.min(100, Math.max(0, ((display.ticketsSold || 0) / display.totalTicket) * 100))}%` }}
+                    ></div>
+                  </div>
+                </div>
+
+                {/* Purchase Button */}
+                {availableSeats > 0 ? (
+                  <button 
+                    onClick={makePayment} 
+                    className="w-full bg-gradient-to-r from-pink-500 to-rose-500 hover:opacity-95 active:scale-95 text-white py-3 rounded-2xl font-bold transition shadow-lg flex items-center justify-center gap-2"
+                  >
+                    Reserve a Spot
+                  </button>
+                ) : (
+                  <div className="space-y-3">
+                    <button 
+                      disabled
+                      className="w-full bg-gray-200 text-gray-400 py-3 rounded-2xl font-bold cursor-not-allowed flex items-center justify-center gap-2"
+                    >
+                      Sold Out
+                    </button>
+                    <div className="flex items-center gap-1.5 justify-center text-xs text-red-500 font-semibold bg-red-50/50 p-2.5 rounded-xl border border-red-100/50">
+                      <ShieldAlert size={14} /> This event has reached full capacity.
+                    </div>
+                  </div>
+                )}
+              </div>
+
+            </div>
+          </>
+        )}
       </div>
 
-      {/* Footer full width */}
       <Footer />
-
     </div>
   );
 }

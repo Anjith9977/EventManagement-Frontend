@@ -5,6 +5,7 @@ import { CalendarDays, MapPin, Ticket, CloudRain, Edit, XCircle, Tag } from 'luc
 import { deleteEventApi, getAEventApi, updateEventApi } from '../../services/AllApi'
 import { useNavigate, useParams } from 'react-router'
 import { toast } from 'react-toastify'
+import SERVER_URL from "../../services/server_url";
 
 function Orgview() {
 
@@ -103,7 +104,7 @@ function Orgview() {
             {displayEvent?.image && (
               <div className="w-full max-h-[400px] overflow-hidden rounded-2xl mb-5">
                 <img
-                  src={`http://localhost:3000/uploads/${displayEvent.image}`}
+                  src={`${SERVER_URL}/uploads/${displayEvent.image}`}
                   alt={displayEvent.eventName}
                   className="w-full h-full object-contain"
                 />

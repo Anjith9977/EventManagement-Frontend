@@ -117,7 +117,7 @@ function Adminevents() {
                   <th className="px-4 py-3 text-left">Event</th>
                   <th className="px-4 py-3 text-left">Location</th>
                   <th className="px-4 py-3 text-left">Date</th>
-                  <th className="px-4 py-3 text-left">Tickets</th>
+                  <th className="px-4 py-3 text-left">Total / Sold / Available</th>
                   <th className="px-4 py-3 text-left">Status</th>
                   <th className="px-4 py-3 text-left">Actions</th>
                 </tr>
@@ -125,29 +125,48 @@ function Adminevents() {
 
               <tbody>
                 {display.length > 0 ? (
-                  display.map((dis) => (
-                    <tr
-                      key={dis._id}
-                      className="border-t border-pink-100 hover:bg-[#FCE7F3] transition-all"
-                    >
-                      <td className="px-4 py-3 font-semibold">
-                        {dis.eventName}
-                      </td>
-                      <td className="px-4 py-3">{dis.location}</td>
-                      <td className="px-4 py-3">{dis.startDate}</td>
-                      <td className="px-4 py-3">{dis.totalTicket}</td>
-                      <td className="px-4 py-3 text-[#EC4899] font-semibold">
-                        {dis.status}
-                      </td>
-                      <td className="px-4 py-3 space-x-2">
-                        <Link to={`/AdminViewEvent/${dis._id}`}>
-                          <button className="bg-gradient-to-r from-[#EC4899] to-[#BE185D] text-white px-3 py-1 rounded-lg text-xs hover:scale-105 transition-all">
-                            View
-                          </button>
-                        </Link>
-                      </td>
-                    </tr>
-                  ))
+                  display.map((dis) => {
+                    const available = dis.totalTicket - (dis.ticketsSold || 0);
+                    return (
+                      <tr
+                        key={dis._id}
+                        className="border-t border-pink-100 hover:bg-[#FCE7F3] transition-all"
+                      >
+                        <td className="px-4 py-3 font-semibold">
+                          {dis.eventName}
+                        </td>
+                        <td className="px-4 py-3">{dis.location}</td>
+                        <td className="px-4 py-3">
+                          {new Date(dis.startDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className="text-gray-700">{dis.totalTicket}</span>
+                          <span className="text-gray-400 mx-1">/</span>
+                          <span className="text-orange-500">{dis.ticketsSold || 0}</span>
+                          <span className="text-gray-400 mx-1">/</span>
+                          <span className={available > 0 ? "text-green-600 font-bold" : "text-red-500 font-bold"}>
+                            {available}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className={`px-2 py-1 rounded-full text-xs font-bold ${
+                            dis.status === 'approved' ? 'bg-green-100 text-green-700' :
+                            dis.status === 'cancelled' ? 'bg-red-100 text-red-700' :
+                            'bg-yellow-100 text-yellow-700'
+                          }`}>
+                            {dis.status}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 space-x-2">
+                          <Link to={`/AdminViewEvent/${dis._id}`}>
+                            <button className="bg-gradient-to-r from-[#EC4899] to-[#BE185D] text-white px-3 py-1 rounded-lg text-xs hover:scale-105 transition-all">
+                              View
+                            </button>
+                          </Link>
+                        </td>
+                      </tr>
+                    );
+                  })
                 ) : (
                   <tr>
                     <td colSpan="6" className="text-center py-6">

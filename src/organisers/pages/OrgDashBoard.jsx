@@ -3,6 +3,7 @@ import OrgHeader from "../components/OrgHeader";
 import OrgSidebar from "../components/OrgSidebar";
 import { Link } from "react-router-dom";
 import { getDashBoardEventApi } from "../../services/AllApi";
+import SERVER_URL from "../../services/server_url";
 
 function OrgDashBoard() {
 
@@ -144,7 +145,7 @@ function OrgDashBoard() {
 
                   <div className="h-36 w-full overflow-hidden">
                     <img
-                      src={`http://localhost:3000/uploads/${event.image}`}
+                      src={`${SERVER_URL}/uploads/${event.image}`}
                       alt={event.eventName}
                       className="w-full h-full object-cover"
                     />

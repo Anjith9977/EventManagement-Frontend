@@ -96,25 +96,28 @@ function AdminViewEvent() {
             </p>
 
             {/* Overview Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
 
-              {/* Total Tickets */}
               <div className="bg-pink-50 p-4 rounded-xl text-center">
                 <p className="text-gray-500 text-sm">Total Tickets</p>
-                <p className="font-bold text-lg">{display.totalTicket}</p>
+                <p className="font-bold text-xl">{display.totalTicket}</p>
               </div>
 
-              {/* Ticket Price */}
+              <div className="bg-orange-50 p-4 rounded-xl text-center">
+                <p className="text-gray-500 text-sm">Tickets Sold</p>
+                <p className="font-bold text-xl text-orange-600">{display.ticketsSold || 0}</p>
+              </div>
+
+              <div className={`p-4 rounded-xl text-center ${ (display.totalTicket - (display.ticketsSold||0)) > 0 ? 'bg-green-50' : 'bg-red-50' }`}>
+                <p className="text-gray-500 text-sm">Available</p>
+                <p className={`font-bold text-xl ${ (display.totalTicket - (display.ticketsSold||0)) > 0 ? 'text-green-600' : 'text-red-600' }`}>
+                  {display.totalTicket - (display.ticketsSold || 0)}
+                </p>
+              </div>
+
               <div className="bg-pink-50 p-4 rounded-xl text-center">
                 <p className="text-gray-500 text-sm">Ticket Price</p>
-                <p className="font-bold text-lg text-pink-600">{display.ticketPrice}</p>
-              </div>
-
-              {/* Event Duration & Category */}
-              <div className="bg-pink-50 p-4 rounded-xl text-center">
-                <p className="text-gray-500 text-sm">Event Duration</p>
-                <p className="font-bold text-lg">{display.startDate}</p>
-                <p className="text-xs text-gray-500 mt-1">Category: Music</p>
+                <p className="font-bold text-xl text-pink-600">₹{display.ticketPrice}</p>
               </div>
 
             </div>
@@ -137,11 +140,11 @@ function AdminViewEvent() {
                 </p>
               </div>
 
-              {/* Ticket Availability */}
+              {/* Category */}
               <div>
-                <p className="text-sm text-gray-500">category</p>
+                <p className="text-sm text-gray-500">Category</p>
                 <p className="font-semibold text-gray-800">
-                  {display.category} tickets
+                  {display.category}
                 </p>
               </div>
 
