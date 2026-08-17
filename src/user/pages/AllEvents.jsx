@@ -39,15 +39,8 @@ function AllEvents() {
   }, [searchkey, selectedCategory, dummyDonations]);
 
   const getAllEvent = async () => {
-    const token = sessionStorage.getItem("token");
-
-    const reqHeader = {
-      authorization: `bearer ${token}`,
-    };
-
     try {
-      const res = await getAllUserEvent(searchkey, reqHeader);
-      // Guard: ensure res.data is an array before setting state (prevents .length crash)
+      const res = await getAllUserEvent(searchkey);
       const data = Array.isArray(res.data) ? res.data : [];
       setDisplayEvent(data);
       setDummyDonations(data);
@@ -59,6 +52,7 @@ function AllEvents() {
       setLoading(false);
     }
   };
+
 
   return (
     <div className="bg-gradient-to-br from-pink-50/30 via-white to-rose-50/30 min-h-screen">

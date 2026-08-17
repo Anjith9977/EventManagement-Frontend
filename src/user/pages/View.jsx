@@ -1,49 +1,52 @@
 import React, { useEffect, useState } from 'react';
 import Header from '../components/Header';
 import Footer from '../../components/Footer';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { getAuserEventApi, paymentApi } from '../../services/AllApi';
 import { loadStripe } from '@stripe/stripe-js';
 import SERVER_URL from "../../services/server_url";
-import { Calendar, MapPin, Tag, Users, ShieldAlert, CreditCard } from "lucide-react";
+import { Calendar, MapPin, Tag, Users, ShieldAlert, CreditCard, LogIn } from "lucide-react";
 
 function View() {
   const [display, setDisplay] = useState({});
   const [loading, setLoading] = useState(true);
   const { id } = useParams();
+  const navigate = useNavigate();
+  const isLoggedIn = !!sessionStorage.getItem('token');
 
   useEffect(() => {
     getAuserEvent();
   }, []);
 
   const getAuserEvent = async () => {
-    const token = sessionStorage.getItem('token');
-    const reqHeader = {
-      authorization: `bearer ${token}`
-    };
+    // Public endpoint — no auth header needed
     try {
-      const result = await getAuserEventApi(id, reqHeader);
+      const result = await getAuserEventApi(id);
       setDisplay(result.data);
     } catch (error) {
-      console.log(error);
+      console.error('Failed to load event:', error);
     } finally {
       setLoading(false);
     }
   };
 
   const makePayment = async () => {
-    // Stripe public key from code
-    const stripe = await loadStripe('pk_test_51SfBlzKjIs046TNDi8GyN5tJDSLsZDmQWLzoNCDySSSNjVQmcVLBgqmFA0u6dzUN5LADr4u6riT96UA9k8w66msI00ahOzCSNr');
     const token = sessionStorage.getItem('token');
-    const reqHeader = {
-      authorization: `bearer ${token}`
-    };
+
+    // Redirect to login if not authenticated
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+
+    const stripe = await loadStripe('pk_test_51SfBlzKjIs046TNDi8GyN5tJDSLsZDmQWLzoNCDySSSNjVQmcVLBgqmFA0u6dzUN5LADr4u6riT96UA9k8w66msI00ahOzCSNr');
+    const reqHeader = { authorization: `Bearer ${token}` };
 
     try {
       const result = await paymentApi(display, reqHeader);
       window.location.href = result.data.url;
     } catch (error) {
-      console.log(error);
+      console.error('Payment failed:', error);
     }
   };
 
@@ -196,15 +199,23 @@ function View() {
 
                 {/* Purchase Button */}
                 {availableSeats > 0 ? (
-                  <button 
-                    onClick={makePayment} 
-                    className="w-full bg-gradient-to-r from-pink-500 to-rose-500 hover:opacity-95 active:scale-95 text-white py-3 rounded-2xl font-bold transition shadow-lg flex items-center justify-center gap-2"
-                  >
-                    Reserve a Spot
-                  </button>
+                  isLoggedIn ? (
+                    <button
+                      onClick={makePayment}
+                      className="w-full bg-gradient-to-r from-pink-500 to-rose-500 hover:opacity-95 active:scale-95 text-white py-3 rounded-2xl font-bold transition shadow-lg flex items-center justify-center gap-2"
+                    >
+                      Reserve a Spot
+                    </button>
+                  ) : (
+                    <Link to="/login">
+                      <button className="w-full bg-gradient-to-r from-pink-500 to-rose-500 hover:opacity-90 text-white py-3 rounded-2xl font-bold transition shadow-lg flex items-center justify-center gap-2">
+                        <LogIn size={16} /> Login to Book
+                      </button>
+                    </Link>
+                  )
                 ) : (
                   <div className="space-y-3">
-                    <button 
+                    <button
                       disabled
                       className="w-full bg-gray-200 text-gray-400 py-3 rounded-2xl font-bold cursor-not-allowed flex items-center justify-center gap-2"
                     >
