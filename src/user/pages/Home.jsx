@@ -20,19 +20,29 @@ function Home() {
   const getEvent = async () => {
     const token = sessionStorage.getItem("token");
 
+    // Skip the authenticated call if user is not logged in.
+    // The Home page is public; unauthenticated visitors just see an empty list.
+    if (!token) {
+      setLoading(false);
+      return;
+    }
+
     const reqHeader = {
       authorization: `Bearer ${token}`,
     };
 
     try {
       const res = await getUserEventApi(reqHeader);
-      setDisplayData(res.data);
+      // Guard: ensure res.data is an array before setting state (prevents .length crash)
+      setDisplayData(Array.isArray(res.data) ? res.data : []);
     } catch (error) {
-      console.log(error);
+      console.error("Failed to fetch events:", error);
+      setDisplayData([]);
     } finally {
       setLoading(false);
     }
   };
+
 
   return (
     <div className="bg-[#FFFDFE] text-gray-900 min-h-screen">

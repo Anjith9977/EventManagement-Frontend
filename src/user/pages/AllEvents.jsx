@@ -47,10 +47,14 @@ function AllEvents() {
 
     try {
       const res = await getAllUserEvent(searchkey, reqHeader);
-      setDisplayEvent(res.data);
-      setDummyDonations(res.data);
+      // Guard: ensure res.data is an array before setting state (prevents .length crash)
+      const data = Array.isArray(res.data) ? res.data : [];
+      setDisplayEvent(data);
+      setDummyDonations(data);
     } catch (error) {
-      console.log(error);
+      console.error("Failed to fetch events:", error);
+      setDisplayEvent([]);
+      setDummyDonations([]);
     } finally {
       setLoading(false);
     }
